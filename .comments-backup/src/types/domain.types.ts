@@ -14,7 +14,7 @@ export type ReservationWithProduct = Reservation & {
   product?: Product;
 };
 
-
+/** Computed available units = total - reserved */
 export type StockAvailability = {
   warehouseId: string;
   warehouseName: string;

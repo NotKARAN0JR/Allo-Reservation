@@ -8,7 +8,7 @@ export function useCountdown(expiresAt: string): number {
   const [secondsLeft, setSecondsLeft] = useState(getSecondsLeft);
 
   useEffect(() => {
-
+    // Re-sync on mount (handles server/client time skew)
     setSecondsLeft(getSecondsLeft());
 
     if (getSecondsLeft() <= 0) return;
@@ -20,7 +20,7 @@ export function useCountdown(expiresAt: string): number {
     }, 1000);
 
     return () => clearInterval(interval);
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expiresAt]);
 
   return secondsLeft;

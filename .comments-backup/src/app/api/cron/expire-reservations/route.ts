@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { expireStaleReservations } from "@/lib/services/reservation.service";
 
-
+/**
+ * Called by Vercel Cron every minute (see vercel.json).
+ * Finds all PENDING reservations past their expiresAt and releases them.
+ *
+ * Protected by CRON_SECRET so it can't be triggered by arbitrary callers.
+ */
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   const expected = `Bearer ${process.env.CRON_SECRET}`;

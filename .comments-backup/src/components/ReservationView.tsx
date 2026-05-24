@@ -32,7 +32,7 @@ export function ReservationView({ initial }: ReservationViewProps) {
       </button>
 
       <div className="border rounded-lg bg-white overflow-hidden">
-        {}
+        {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -47,7 +47,7 @@ export function ReservationView({ initial }: ReservationViewProps) {
           </div>
         </div>
 
-        {}
+        {/* Details */}
         <div className="px-6 py-5 space-y-4">
           <Detail label="Quantity" value={`${reservation.quantity} unit${reservation.quantity !== 1 ? "s" : ""}`} />
           <Detail label="Warehouse" value={reservation.warehouseId} mono />
@@ -61,14 +61,14 @@ export function ReservationView({ initial }: ReservationViewProps) {
           )}
         </div>
 
-        {}
+        {/* Error banner */}
         {actionError && (
           <div className="mx-6 mb-4 px-4 py-3 rounded-md bg-destructive/8 border border-destructive/20 text-sm text-destructive">
             {actionError}
           </div>
         )}
 
-        {}
+        {/* Actions */}
         {isPending && !isExpired && (
           <div className="px-6 pb-6 flex gap-3">
             <button

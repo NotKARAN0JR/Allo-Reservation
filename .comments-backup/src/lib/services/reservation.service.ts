@@ -16,15 +16,24 @@ import {
 
 const WINDOW = parseInt(process.env.RESERVATION_WINDOW_MINUTES ?? "10", 10);
 
+// ── Create ────────────────────────────────────────────────────────────────────
 
-
+/**
+ * Reserve `quantity` units of a product at a warehouse.
+ *
+ * Concurrency guarantee:
+ *   The Stock row is locked with SELECT FOR UPDATE before reading the available
+ *   count. Two simultaneous requests for the last unit will serialize here —
+ *   the second will wait for the first's transaction to commit, then re-read
+ *   the (now-decremented) count and receive a 409.
+ */
 export async function createReservation(
   productId: string,
   warehouseId: string,
   quantity: number
 ): Promise<Reservation> {
   return prisma.$transaction(async (tx) => {
-
+    // 1. Acquire exclusive row lock
     const stock = await lockStockRow(tx, productId, warehouseId);
 
     if (!stock) {
@@ -39,8 +48,10 @@ export async function createReservation(
       );
     }
 
+    // 2. Atomically increment reserved
     await incrementReserved(tx, stock.id, quantity);
 
+    // 3. Create the reservation record
     const reservation = await tx.reservation.create({
       data: {
         productId,
@@ -55,8 +66,13 @@ export async function createReservation(
   });
 }
 
+// ── Confirm ───────────────────────────────────────────────────────────────────
 
-
+/**
+ * Confirm a reservation (payment succeeded).
+ * Returns 410 if the reservation has expired.
+ * Lazy expiry: if the reservation window has passed we release it here and throw.
+ */
 export async function confirmReservation(id: string): Promise<Reservation> {
   return prisma.$transaction(async (tx) => {
     const reservation = await findReservationById(tx, id);
@@ -73,7 +89,7 @@ export async function confirmReservation(id: string): Promise<Reservation> {
       reservation.status === ReservationStatus.RELEASED ||
       reservation.expiresAt < new Date()
     ) {
-
+      // Lazy cleanup: release the hold if it hasn't been released yet
       if (reservation.status === ReservationStatus.PENDING) {
         await decrementReserved(
           tx,
@@ -89,6 +105,7 @@ export async function confirmReservation(id: string): Promise<Reservation> {
       throw new ReservationExpiredError();
     }
 
+    // Permanently consume the stock
     await consumeStock(
       tx,
       reservation.productId,
@@ -103,8 +120,12 @@ export async function confirmReservation(id: string): Promise<Reservation> {
   });
 }
 
+// ── Release ───────────────────────────────────────────────────────────────────
 
-
+/**
+ * Release a reservation early (user cancelled or payment failed).
+ * Idempotent — safe to call on an already-released reservation.
+ */
 export async function releaseReservation(id: string): Promise<Reservation> {
   return prisma.$transaction(async (tx) => {
     const reservation = await findReservationById(tx, id);
@@ -113,6 +134,7 @@ export async function releaseReservation(id: string): Promise<Reservation> {
       throw new ReservationNotFoundError(id);
     }
 
+    // Already in a terminal state — return as-is (idempotent)
     if (reservation.status !== ReservationStatus.PENDING) {
       return reservation;
     }
@@ -131,12 +153,14 @@ export async function releaseReservation(id: string): Promise<Reservation> {
   });
 }
 
+// ── Get ───────────────────────────────────────────────────────────────────────
 
 export async function getReservation(id: string): Promise<Reservation> {
   const reservation = await prisma.reservation.findUnique({ where: { id } });
 
   if (!reservation) throw new ReservationNotFoundError(id);
 
+  // Lazy expiry check on read
   if (
     reservation.status === ReservationStatus.PENDING &&
     reservation.expiresAt < new Date()
@@ -158,6 +182,7 @@ export async function getReservation(id: string): Promise<Reservation> {
   return reservation;
 }
 
+// ── Batch expiry (called by cron) ─────────────────────────────────────────────
 
 export async function expireStaleReservations(): Promise<number> {
   const expired = await prisma.reservation.findMany({
@@ -179,7 +204,7 @@ export async function expireStaleReservations(): Promise<number> {
       });
       released++;
     } catch (err) {
-
+      // Log and continue — don't let one bad row abort the batch
       console.error(`[expiry] Failed to release reservation ${r.id}:`, err);
     }
   }

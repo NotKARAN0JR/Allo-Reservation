@@ -8,7 +8,7 @@ export class AppError extends Error {
   }
 }
 
-
+/** HTTP 409 — not enough stock available */
 export class StockUnavailableError extends AppError {
   constructor(message = "Insufficient stock available") {
     super(message, 409);
@@ -16,7 +16,7 @@ export class StockUnavailableError extends AppError {
   }
 }
 
-
+/** HTTP 410 — reservation window has passed */
 export class ReservationExpiredError extends AppError {
   constructor(message = "Reservation has expired") {
     super(message, 410);
@@ -24,7 +24,7 @@ export class ReservationExpiredError extends AppError {
   }
 }
 
-
+/** HTTP 404 — reservation not found */
 export class ReservationNotFoundError extends AppError {
   constructor(id: string) {
     super(`Reservation ${id} not found`, 404);

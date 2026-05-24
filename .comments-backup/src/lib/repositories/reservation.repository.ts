@@ -3,7 +3,11 @@ import type { ITXClientDenyList } from "@prisma/client/runtime/library";
 
 type TransactionClient = Omit<PrismaClient, ITXClientDenyList>;
 
-
+/**
+ * Lock the Stock row for this product/warehouse with SELECT FOR UPDATE.
+ * Must be called inside a Prisma interactive transaction.
+ * Returns the locked row, or null if it doesn't exist.
+ */
 export async function lockStockRow(
   tx: TransactionClient,
   productId: string,
@@ -21,7 +25,7 @@ export async function lockStockRow(
   return rows[0] ?? null;
 }
 
-
+/** Increment reserved count atomically (inside a transaction). */
 export async function incrementReserved(
   tx: TransactionClient,
   stockId: string,
@@ -34,7 +38,7 @@ export async function incrementReserved(
   `;
 }
 
-
+/** Decrement reserved count atomically (inside a transaction). */
 export async function decrementReserved(
   tx: TransactionClient,
   productId: string,
@@ -49,7 +53,10 @@ export async function decrementReserved(
   `;
 }
 
-
+/**
+ * On confirmation: remove from both reserved and total
+ * (the units are permanently consumed).
+ */
 export async function consumeStock(
   tx: TransactionClient,
   productId: string,

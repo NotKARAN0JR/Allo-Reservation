@@ -52,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="border rounded-lg bg-white overflow-hidden flex flex-col">
-      {}
+      {/* Product header */}
       <div className="p-5 flex-1">
         <h2 className="font-semibold text-base leading-tight">{product.name}</h2>
         {product.description && (
@@ -63,7 +63,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="font-bold text-lg mt-3">{price}</p>
       </div>
 
-      {}
+      {/* Stock per warehouse */}
       <div className="border-t">
         {product.availability.map((stock) => (
           <div
@@ -88,7 +88,7 @@ export function ProductCard({ product }: ProductCardProps) {
         ))}
       </div>
 
-      {}
+      {/* Inline 409 error */}
       {error && (
         <div className="px-5 py-3 bg-destructive/5 border-t text-sm text-destructive">
           {error}

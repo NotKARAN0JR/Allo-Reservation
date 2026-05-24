@@ -9,7 +9,14 @@ export type IdempotencyResult<T> = {
   cached: boolean;
 };
 
-
+/**
+ * Wrap any operation with idempotency.
+ * If a request with the same key has been processed before (within TTL),
+ * the original response is returned without re-executing the operation.
+ *
+ * @param key   The value of the Idempotency-Key request header
+ * @param fn    The operation to run on first call
+ */
 export async function withIdempotency<T>(
   key: string,
   fn: () => Promise<{ status: number; body: T }>
@@ -26,6 +33,7 @@ export async function withIdempotency<T>(
 
   const result = await fn();
 
+  // Upsert in case of a race between two concurrent identical keys
   await prisma.idempotencyKey.upsert({
     where: { key },
     create: {

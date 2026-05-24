@@ -14,7 +14,7 @@ export function useReservation(initialData: ReservationResponse) {
     fetcher,
     {
       fallbackData: initialData,
-
+      // Only poll while still pending and not expired
       refreshInterval: (data) => {
         if (!data || data.status !== "PENDING") return 0;
         const expired = new Date(data.expiresAt) < new Date();

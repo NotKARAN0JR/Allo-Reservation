@@ -1,7 +1,7 @@
 import { findAllProductsWithAvailability } from "@/lib/repositories/product.repository";
 import { ProductCard } from "@/components/ProductCard";
 
-export const dynamic = "force-dynamic"; 
+export const dynamic = "force-dynamic"; // always fresh stock data
 
 export default async function ProductsPage() {
   const products = await findAllProductsWithAvailability();

@@ -5,14 +5,14 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱  Seeding database...");
 
-  // Clean slate
+ 
   await prisma.idempotencyKey.deleteMany();
   await prisma.reservation.deleteMany();
   await prisma.stock.deleteMany();
   await prisma.product.deleteMany();
   await prisma.warehouse.deleteMany();
 
-  // ── Warehouses ──────────────────────────────────────────────────────────────
+ 
   const mumbai = await prisma.warehouse.create({
     data: { name: "Mumbai Central", location: "Mumbai, Maharashtra" },
   });
@@ -27,10 +27,7 @@ async function main() {
     `✅  Created 3 warehouses: ${mumbai.name}, ${bangalore.name}, ${delhi.name}`
   );
 
-  // ── Products + stock ────────────────────────────────────────────────────────
-  // Deliberately varied stock levels:
-  //   - Some warehouses have tight stock (1 unit) → easy to demo 409
-  //   - Some have comfortable stock (5–10 units)
+ 
   const catalogue: Array<{
     name: string;
     description: string;
@@ -88,7 +85,7 @@ async function main() {
     });
 
     const stockEntries = Object.entries(item.stock)
-      .filter(([, qty]) => qty >= 0) // include 0-stock entries so the warehouse shows up
+      .filter(([, qty]) => qty >= 0) 
       .map(([wh, qty]) => ({
         productId: product.id,
         warehouseId: warehouseMap[wh],

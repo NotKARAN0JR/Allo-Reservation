@@ -25,8 +25,12 @@ export function ReservationView({ initial }: ReservationViewProps) {
   return (
     <div className="max-w-lg mx-auto">
       <button
-        onClick={() => router.push("/products")}
-        className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1"
+        onClick={() => {
+          router.push("/products");
+          // ensure the products page fetches fresh server data
+          setTimeout(() => window.location.reload(), 120);
+        }}
+        className="text-sm text-[#111827] hover:text-foreground mb-6 flex items-center gap-1"
       >
         ← Back to products
       </button>
@@ -102,7 +106,10 @@ export function ReservationView({ initial }: ReservationViewProps) {
               {isExpired ? "This reservation has expired" : "This reservation was cancelled"}
             </div>
             <button
-              onClick={() => router.push("/products")}
+              onClick={() => {
+                router.push("/products");
+                setTimeout(() => window.location.reload(), 120);
+              }}
               className="w-full py-2.5 rounded-md border text-sm font-medium hover:bg-muted transition-colors"
             >
               Browse products

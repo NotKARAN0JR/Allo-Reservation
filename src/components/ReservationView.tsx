@@ -31,7 +31,7 @@ export function ReservationView({ initial }: ReservationViewProps) {
         ← Back to products
       </button>
 
-      <div className="border rounded-lg bg-white overflow-hidden">
+      <div className="app-card">
         {}
         <div className="px-6 pt-6 pb-4 border-b">
           <div className="flex items-start justify-between gap-4">
@@ -48,7 +48,7 @@ export function ReservationView({ initial }: ReservationViewProps) {
         </div>
 
         {}
-        <div className="px-6 py-5 space-y-4">
+        <div className="px-6 py-6 space-y-4">
           <Detail label="Quantity" value={`${reservation.quantity} unit${reservation.quantity !== 1 ? "s" : ""}`} />
           <Detail label="Warehouse" value={reservation.warehouseId} mono />
           <Detail label="Reserved at" value={new Date(reservation.createdAt).toLocaleString()} />

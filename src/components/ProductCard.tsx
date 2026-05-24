@@ -51,10 +51,10 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <div className="border rounded-lg bg-white overflow-hidden flex flex-col">
+    <div className="app-card flex flex-col transition-transform transform hover:-translate-y-1">
       {}
-      <div className="p-5 flex-1">
-        <h2 className="font-semibold text-base leading-tight">{product.name}</h2>
+      <div className="p-6 flex-1">
+        <h2 className="font-semibold text-lg leading-tight">{product.name}</h2>
         {product.description && (
           <p className="text-muted-foreground text-sm mt-1 line-clamp-2">
             {product.description}
@@ -66,10 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
       {}
       <div className="border-t">
         {product.availability.map((stock) => (
-          <div
-            key={stock.warehouseId}
-            className="flex items-center justify-between px-5 py-3 border-b last:border-b-0"
-          >
+          <div key={stock.warehouseId} className="flex items-center justify-between px-6 py-3 border-b last:border-b-0">
             <div className="min-w-0 mr-3">
               <p className="text-sm font-medium truncate">{stock.warehouseName}</p>
               <p className="text-xs text-muted-foreground truncate">{stock.warehouseLocation}</p>
@@ -79,7 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <button
                 onClick={() => handleReserve(stock)}
                 disabled={stock.available === 0 || loadingWarehouse === stock.warehouseId}
-                className="text-sm font-medium px-3 py-1.5 rounded-md bg-black text-white hover:bg-black/80 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="text-sm font-medium px-3 py-1.5 rounded-md bg-black text-white hover:bg-black/80 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
               >
                 {loadingWarehouse === stock.warehouseId ? "Reserving…" : "Reserve"}
               </button>

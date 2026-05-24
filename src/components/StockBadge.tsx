@@ -13,18 +13,23 @@ export function StockBadge({ available, className }: StockBadgeProps) {
       ? "1 left"
       : `${available} available`;
 
+  const classes = cn("inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium shadow-sm", className);
+  if (available === 0) {
+    return (
+      <span className={classes} style={{ background: 'var(--status-out-bg)', color: 'var(--status-out-text)' }}>
+        {label}
+      </span>
+    );
+  }
+  if (available <= 2) {
+    return (
+      <span className={classes} style={{ background: 'var(--status-low-bg)', color: 'var(--status-low-text)' }}>
+        {label}
+      </span>
+    );
+  }
   return (
-    <span
-      className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-        available === 0
-          ? "bg-destructive/10 text-destructive"
-          : available <= 2
-          ? "bg-orange-50 text-orange-700"
-          : "bg-green-50 text-green-700",
-        className
-      )}
-    >
+    <span className={classes} style={{ background: 'var(--status-available-bg)', color: 'var(--status-available-text)' }}>
       {label}
     </span>
   );

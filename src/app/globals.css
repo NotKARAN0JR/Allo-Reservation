@@ -50,5 +50,45 @@
 
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground; }
+  :root {
+    --color-app-bg: #f5f7f7;
+    --color-card: #ffffff;
+    --color-text: #111827;
+    --color-muted: #6b7280;
+    --color-border: #e5e7eb;
+    --color-primary: #01848a;
+    --color-primary-hover: #016d72;
+    --status-available-bg: #dcfce7;
+    --status-available-text: #166534;
+    --status-low-bg: #fef3c7;
+    --status-low-text: #b45309;
+    --status-out-bg: #fee2e2;
+    --status-out-text: #dc2626;
+    --radius-xl: 1rem;
+  }
+
+  body {
+    background-color: var(--color-app-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Reusable elevated card used across the app */
+  .app-card {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  }
+  .app-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 36px rgba(16,24,40,0.08);
+  }
+
+  /* small helpers */
+  .text-muted { color: var(--color-muted); }
+  .border-default { border-color: var(--color-border); }
 }
